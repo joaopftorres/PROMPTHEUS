@@ -2,6 +2,13 @@
 
 This AI-driven tool is designed to automate the systematic literature review (SLR) process. It uses OpenAI's GPT models, topic modeling, and other natural language processing techniques to refine and enhance machine-generated summaries from academic papers.
 
+## Journal Publication
+
+This framework was published in *Information* (MDPI):
+
+- Torres, J.; Mulligan, C.; Jorge, J.; Moreira, C. **PROMPTHEUS: A Human-Centered Pipeline to Streamline Systematic Literature Reviews with Large Language Models**. *Information* 2025, 16(5), 420. https://doi.org/10.3390/info16050420
+- Article page: https://www.mdpi.com/2078-2489/16/5/420
+
 ![Diagram of the PROMPTHEUS Framework](./images/PROMPTHEUS.png)
 
 ## Features
@@ -44,6 +51,17 @@ The setup.sh script will:
 - Install python3 packages listed in requirements.txt.
 - Download the NLTK stopwords and tokenizer data (stopwords, punkt, punkt_tab).
 - Download the spaCy en_core_web_sm language model.
+
+### Installation Troubleshooting (WSL/Linux)
+
+If installation fails while building `hdbscan` with an error like `x86_64-linux-gnu-gcc: No such file or directory`, install build tools and retry:
+
+```bash
+sudo apt update
+sudo apt install -y build-essential python3-dev python3.12-dev
+python3 -m pip install --upgrade pip setuptools wheel
+python3 -m pip install -r requirements.txt
+```
 
 ## Usage
 After installation, you can run the tool via the command line to refine literature reviews.

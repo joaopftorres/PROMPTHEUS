@@ -17,13 +17,19 @@ from summarizer_pipeline import summarize, improve_summary
 from file_saver import get_arxiv_bibtex, save_text
 from metrics import get_rouge, get_coherence, tokenit, gen_sentence
 from prompts import create_arxiv_query, expand_title, create_latex_document, de_latex, create_template
+from settings import (
+    DEFAULT_GPT_MODEL,
+    DEFAULT_MAX_PAPERS,
+    SENTENCE_TRANSFORMER_MODEL,
+    T5_SUMMARIZER_MODEL,
+)
 from transformers import logging as transformers_logging
 
 # Suppress specific transformers warnings
 transformers_logging.set_verbosity_error()
 
 # Entry Point
-def main(title, gpt_model="gpt-3.5-turbo", max_papers=200):
+def main(title, gpt_model=DEFAULT_GPT_MODEL, max_papers=DEFAULT_MAX_PAPERS):
 
     start_time = time.time()
 
@@ -62,7 +68,7 @@ def process_title_and_query_arxiv(title, gpt_model):
 
 def filter_articles(expanded_title, articles, max_papers):
     """Filter articles based on embeddings and similarity."""
-    model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+    model = SentenceTransformer(SENTENCE_TRANSFORMER_MODEL)
     input_embedding = model.encode([expanded_title], convert_to_tensor=True)
 
     selected_index, selected_sim, excluded_index, excluded_sim = [], [], [], []
@@ -132,10 +138,10 @@ def topic_model_and_summarization(selected_index, articles, title, joint_title, 
       save_text(bibtex_entry, joint_title, joint_title, "bib")
 
 
-    topic_model, dfs_by_topic, topic_titles, visualize_documents, topic_report = topic_model_pipeline(abstracts, SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2'), gpt_model)
+    topic_model, dfs_by_topic, topic_titles, visualize_documents, topic_report = topic_model_pipeline(abstracts, SentenceTransformer(SENTENCE_TRANSFORMER_MODEL), gpt_model)
     save_text(topic_report, "topic_report", joint_title, "reports")
 
-    summarizer = pipeline("summarization", model="Falconsai/text_summarization")
+    summarizer = pipeline("summarization", model=T5_SUMMARIZER_MODEL)
     topic_summaries = summarize(topic_model, dfs_by_topic, summarizer, bib_tex_keys, paper_names)
 
     improved_summaries = improve_summary(topic_summaries, topic_titles, title, gpt_model)
@@ -157,7 +163,7 @@ def generate_latex_document(title, joint_title, topic_titles, summaries, final_s
     ordered_titles = topic_titles[1:] + [topic_titles[0]]
     latex_doc = create_latex_document(title, len(summaries), final_summary, ordered_titles, latex_template, gpt_model)
     
-    save_text(latex_doc, f"{joint_title}-literature_review", title, "SLR")
+    save_text(latex_doc, f"{joint_title}-literature_review", joint_title, "SLR")
 
 
     return latex_doc
@@ -197,7 +203,7 @@ def run_metrics(title, joint_title, articles, selected_index, improve_summaries,
     save_text(readability_scores, "readability_metrics", joint_title, "metrics")
 
     # Similarity Metrics
-    model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+    model = SentenceTransformer(SENTENCE_TRANSFORMER_MODEL)
     input_embedding = model.encode([title], convert_to_tensor=True)
     abstract_embedding = model.encode(raw_abstracts, convert_to_tensor=True)
     raw_summaries_embedding =  model.encode(raw_summaries, convert_to_tensor=True)
@@ -250,8 +256,8 @@ def plot_similarity_scores(bert_scores, avg_random_score, joint_title):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="AI-driven tool designed to automate the systematic literature review (SLR) process.")
     parser.add_argument("title", help="Title of the literature review")
-    parser.add_argument("--gpt_model", default="gpt-3.5-turbo", help="GPT model to use (default: gpt-3.5-turbo, recommended model: gpt-4o)")
-    parser.add_argument("--max_papers", type=int, default=200, help="Maximum number of papers to process (default: 200)")
+    parser.add_argument("--gpt_model", default=DEFAULT_GPT_MODEL, help="GPT model to use (default: gpt-3.5-turbo, recommended model: gpt-4o)")
+    parser.add_argument("--max_papers", type=int, default=DEFAULT_MAX_PAPERS, help="Maximum number of papers to process (default: 200)")
 
     args = parser.parse_args()
 

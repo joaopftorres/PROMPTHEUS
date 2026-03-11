@@ -3,6 +3,7 @@ from bertopic import BERTopic
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 from prompts import get_title
+from settings import DEFAULT_GPT_MODEL
 
 
 def create_topic_model(docs, model):
@@ -26,7 +27,7 @@ def create_topic_model(docs, model):
   return topic_model, doc_embeddings
 
 
-def topic_model_pipeline(docs, model, gpt_model="gpt-3.5-turbo"):
+def topic_model_pipeline(docs, model, gpt_model=DEFAULT_GPT_MODEL):
   topic_model, doc_embeddings= create_topic_model(docs, model)
 
   topic_report =f"Topics found:\n{topic_model.get_topic_info()}\n"

@@ -1,41 +1,12 @@
-import os
-import subprocess
 import requests
-import json
+
+from storage import OutputRepository
+
+
+_output_repository = OutputRepository()
 
 def save_text(text, filename, title, doc_type=None, info=""):
-  path_name = title+info
-
-  if doc_type:
-    if doc_type=="bib":
-      directory="SLR"
-    else:
-      directory = doc_type
-  else:
-    directory = "results"
-
-  # Create 'output' directory if it doesn't exist
-  if not os.path.exists('output'):
-      os.makedirs('output')
-
-  if not os.path.exists(f'output/{path_name}'):
-      os.makedirs(f'output/{path_name}')
- 
-  if not os.path.exists(f'output/{path_name}/{directory}'):
-      os.makedirs(f'output/{path_name}/{directory}')
-
-  if doc_type == "SLR":
-    with open(f'output/{path_name}/{directory}/{filename}.tex', 'w') as f:
-      f.write(text)
-  elif doc_type == "bib":
-    with open(f'output/{path_name}/{directory}/{filename}.bib', 'a') as f:
-      f.write(text + '\n')
-  elif doc_type == "metrics":
-    with open(f'output/{path_name}/{directory}/{filename}.txt', 'w') as f:
-      f.write(json.dumps(text, indent=4))
-  else:
-    with open(f'output/{path_name}/{directory}/{filename}.txt', 'w') as f:
-        f.write(text)
+  _output_repository.save_text(text, filename, title, doc_type=doc_type, info=info)
 
         
 
