@@ -1,12 +1,9 @@
-import openai
-import os
-from dotenv import load_dotenv
+from llm import get_openai_client
+from settings import DEFAULT_GPT_MODEL
 
-load_dotenv()
+client = get_openai_client()
 
-client = openai.OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-
-def expand_title(title, model="gpt-3.5-turbo"):
+def expand_title(title, model=DEFAULT_GPT_MODEL):
     completion = client.chat.completions.create(
         model=model,
         messages=[
@@ -47,7 +44,7 @@ def expand_title(title, model="gpt-3.5-turbo"):
 
 
 
-def create_arxiv_query(topic, model="gpt-3.5-turbo"):
+def create_arxiv_query(topic, model=DEFAULT_GPT_MODEL):
     completion = client.chat.completions.create(
         model=model,
         messages=[
@@ -87,7 +84,7 @@ def create_arxiv_query(topic, model="gpt-3.5-turbo"):
 
 
 
-def get_title(topic_keywords, model = "gpt-3.5-turbo"):
+def get_title(topic_keywords, model=DEFAULT_GPT_MODEL):
     completion = client.chat.completions.create(
         model=model,
         messages=[
@@ -168,7 +165,7 @@ def create_template(joint_title):
   return latex_template
 
 
-def post_edit(summary, section_name, title, model = "gpt-3.5-turbo"):
+def post_edit(summary, section_name, title, model=DEFAULT_GPT_MODEL):
   completion = client.chat.completions.create(
       model=model,
       messages=[
@@ -198,7 +195,7 @@ def post_edit(summary, section_name, title, model = "gpt-3.5-turbo"):
 
 
 
-def create_latex_document(title, number_sections, final_summary, section_names, latex_template, model = "gpt-3.5-turbo"):
+def create_latex_document(title, number_sections, final_summary, section_names, latex_template, model=DEFAULT_GPT_MODEL):
     # Remove citations from final_summary
 
     completion = client.chat.completions.create(
@@ -246,7 +243,7 @@ def create_latex_document(title, number_sections, final_summary, section_names, 
 
 
 
-def de_latex(latex_doc, model = "gpt-3.5-turbo"):
+def de_latex(latex_doc, model=DEFAULT_GPT_MODEL):
     # Remove citations from final_summary
 
     completion = client.chat.completions.create(

@@ -3,8 +3,19 @@ import re
 import time
 
 from cleaner import clean_text
+from settings import (
+    DEFAULT_ARXIV_MAX_RETRIES,
+    DEFAULT_ARXIV_RETRY_DELAY_SECONDS,
+    DEFAULT_ARXIV_TARGET_PAPERS,
+    DEFAULT_ARXIV_MAX_RESULTS,
+)
 
-def search_arxiv(query, max_retries=10, retry_delay=5, target_num_papers=200):
+def search_arxiv(
+    query,
+    max_retries=DEFAULT_ARXIV_MAX_RETRIES,
+    retry_delay=DEFAULT_ARXIV_RETRY_DELAY_SECONDS,
+    target_num_papers=DEFAULT_ARXIV_TARGET_PAPERS,
+):
     """Search Arxiv and return a list of articles, retrying on failure."""
 
     num_papers_found = 0
@@ -18,7 +29,7 @@ def search_arxiv(query, max_retries=10, retry_delay=5, target_num_papers=200):
             # Perform the search
             search = arxiv.Search(
                 query=query,
-                max_results=3000,
+                max_results=DEFAULT_ARXIV_MAX_RESULTS,
                 sort_by=arxiv.SortCriterion.SubmittedDate,
                 sort_order=arxiv.SortOrder.Descending
             )
